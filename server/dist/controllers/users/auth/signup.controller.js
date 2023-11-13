@@ -20,9 +20,21 @@ const statusMessages_1 = require("../../../utils/statusMessages");
 const statusCodes_1 = require("../../../utils/statusCodes");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const zod_1 = require("zod");
 const signupUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, email, password } = req.body;
+        const signupSchema = zod_1.z.object({
+            name: zod_1.z.string(),
+            email: zod_1.z.string().email().min(6),
+            password: zod_1.z.string().min(6),
+        });
+        const parsedInput = signupSchema.safeParse(req.body);
+        if (!parsedInput.success) {
+            return res.status(statusCodes_1.STATUSCODES.BAD_REQUEST).json({ parsedInput });
+        }
+        const name = parsedInput.data.name;
+        const email = parsedInput.data.email;
+        const password = parsedInput.data.password;
         if (!email || !password) {
             return res
                 .status(statusCodes_1.STATUSCODES.UNAUTHORIZED)

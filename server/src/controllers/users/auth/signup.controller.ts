@@ -6,6 +6,7 @@ import { STATUSMESSAGES } from "../../../utils/statusMessages";
 import { STATUSCODES } from "../../../utils/statusCodes";
 import jwt from "jsonwebtoken";
 import bcrpyt from "bcryptjs";
+import { z } from "zod";
 /*
 @ users
 POST /users/signup
@@ -14,14 +15,26 @@ interface RequestBody {
   name: string;
   email: string;
   password: string;
-  createdOn: string;
-  createdAt: string;
-  role: string;
+  createdOn?: string;
+  createdAt?: string;
+  role?: string;
   token?: string;
 }
+
 const signupUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, password }: RequestBody = req.body;
+    const signupSchema = z.object({
+      name: z.string(),
+      email: z.string().email().min(6),
+      password: z.string().min(6),
+    });
+    const parsedInput = signupSchema.safeParse(req.body);
+    if (!parsedInput.success) {
+      return res.status(STATUSCODES.BAD_REQUEST).json({ parsedInput });
+    }
+    const name = parsedInput.data.name;
+    const email = parsedInput.data.email;
+    const password = parsedInput.data.password;
 
     if (!email || !password) {
       return res

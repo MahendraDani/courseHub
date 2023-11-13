@@ -4,6 +4,7 @@ import { STATUSCODES } from "../../../utils/statusCodes";
 import { User } from "../../../models/users";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { z } from "zod";
 
 interface LoginRequestBody {
   email: string;
@@ -11,7 +12,18 @@ interface LoginRequestBody {
 }
 
 export const loginUser = async (req: Request, res: Response) => {
-  const { email, password }: LoginRequestBody = req.body;
+  const loginSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(6),
+  });
+
+  const parsedInput = loginSchema.safeParse(req.body);
+  if (!parsedInput.success) {
+    return res.status(STATUSCODES.BAD_REQUEST).json(parsedInput);
+  }
+
+  const email = parsedInput.data.email;
+  const password = parsedInput.data.password;
   if (!email || !password) {
     return res
       .status(STATUSCODES.UNAUTHORIZED)

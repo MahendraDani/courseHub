@@ -18,8 +18,18 @@ const statusCodes_1 = require("../../../utils/statusCodes");
 const users_1 = require("../../../models/users");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const zod_1 = require("zod");
 const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
+    const loginSchema = zod_1.z.object({
+        email: zod_1.z.string().email(),
+        password: zod_1.z.string().min(6),
+    });
+    const parsedInput = loginSchema.safeParse(req.body);
+    if (!parsedInput.success) {
+        return res.status(statusCodes_1.STATUSCODES.BAD_REQUEST).json(parsedInput);
+    }
+    const email = parsedInput.data.email;
+    const password = parsedInput.data.password;
     if (!email || !password) {
         return res
             .status(statusCodes_1.STATUSCODES.UNAUTHORIZED)
