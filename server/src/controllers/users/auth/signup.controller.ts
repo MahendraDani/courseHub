@@ -26,7 +26,7 @@ const signupUser = async (req: Request, res: Response) => {
     if (!email || !password) {
       return res
         .status(STATUSCODES.UNAUTHORIZED)
-        .json({ message: STATUSMESSAGES.UNAUTHORIZED });
+        .json({ message: STATUSMESSAGES.INVALID_CREDENTIALS });
     }
 
     const isExistingUser = await User.findOne({ email });
@@ -51,7 +51,7 @@ const signupUser = async (req: Request, res: Response) => {
 
     //@ts-ignore
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "10d",
+      expiresIn: 20,
     });
 
     res.status(STATUSCODES.CREATED).json({

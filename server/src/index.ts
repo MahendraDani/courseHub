@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import { connectDB } from "./config/database";
 
 import signupUserRoute from "./routes/users/auth/signup.route";
+import { verifyToken } from "./middlewares/verifyToken";
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -29,5 +30,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // connectDB();
 
 app.use("/users", signupUserRoute);
+app.get("/", verifyToken, (req: Request, res: Response) => {
+  res.send("Top secret");
+});
 
 startServer();

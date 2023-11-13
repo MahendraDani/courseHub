@@ -26,7 +26,7 @@ const signupUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (!email || !password) {
             return res
                 .status(statusCodes_1.STATUSCODES.UNAUTHORIZED)
-                .json({ message: statusMessages_1.STATUSMESSAGES.UNAUTHORIZED });
+                .json({ message: statusMessages_1.STATUSMESSAGES.INVALID_CREDENTIALS });
         }
         const isExistingUser = yield users_1.User.findOne({ email });
         if (isExistingUser) {
@@ -47,7 +47,7 @@ const signupUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         yield newUser.save();
         //@ts-ignore
         const token = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: "10d",
+            expiresIn: 20,
         });
         res.status(statusCodes_1.STATUSCODES.CREATED).json({
             message: "User signed up successfully",
