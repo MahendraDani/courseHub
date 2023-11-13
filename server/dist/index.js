@@ -19,6 +19,7 @@ const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const database_1 = require("./config/database");
 const signup_route_1 = __importDefault(require("./routes/users/auth/signup.route"));
+const login_route_1 = __importDefault(require("./routes/users/auth/login.route"));
 const verifyToken_1 = require("./middlewares/verifyToken");
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3001;
@@ -39,6 +40,7 @@ app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 // connectDB();
 app.use("/users", signup_route_1.default);
+app.use("/users", login_route_1.default);
 app.get("/", verifyToken_1.verifyToken, (req, res) => {
     res.send("Top secret");
 });

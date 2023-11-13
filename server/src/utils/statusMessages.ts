@@ -5,4 +5,6 @@ export const STATUSMESSAGES = {
   INTERNAL_SERVER_ERROR: "Internal serever error",
   ACCEES_TOKEN_NOT_FOUND: "Access token not found",
   ACCESS_TOKEN_INVALID: "Invalid or expired access token",
+  SIGNUP_SUCCESS: "User signed up successfully",
+  LOGIN_SUCCESS: "User logged in successfully",
 };

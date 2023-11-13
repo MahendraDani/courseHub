@@ -51,12 +51,13 @@ const signupUser = async (req: Request, res: Response) => {
 
     //@ts-ignore
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: 20,
+      expiresIn: "30d",
     });
 
     res.status(STATUSCODES.CREATED).json({
-      message: "User signed up successfully",
-      user: { ...payload, token },
+      message: STATUSMESSAGES.SIGNUP_SUCCESS,
+      userId: newUser._id,
+      token: token,
     });
   } catch (error) {
     return res

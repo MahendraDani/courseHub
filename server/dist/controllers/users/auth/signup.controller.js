@@ -47,11 +47,12 @@ const signupUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         yield newUser.save();
         //@ts-ignore
         const token = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: 20,
+            expiresIn: "30d",
         });
         res.status(statusCodes_1.STATUSCODES.CREATED).json({
-            message: "User signed up successfully",
-            user: Object.assign(Object.assign({}, payload), { token }),
+            message: statusMessages_1.STATUSMESSAGES.SIGNUP_SUCCESS,
+            userId: newUser._id,
+            token: token,
         });
     }
     catch (error) {

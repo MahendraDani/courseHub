@@ -8,11 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginUser = void 0;
 const statusMessages_1 = require("../../../utils/statusMessages");
 const statusCodes_1 = require("../../../utils/statusCodes");
 const users_1 = require("../../../models/users");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -20,11 +25,35 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             .status(statusCodes_1.STATUSCODES.UNAUTHORIZED)
             .json({ message: statusMessages_1.STATUSMESSAGES.INVALID_CREDENTIALS });
     }
-    const isUser = yield users_1.User.findOne({ email });
-    if (!isUser) {
+    const user = yield users_1.User.findOne({ email });
+    if (!user) {
         return res
             .status(statusCodes_1.STATUSCODES.UNAUTHORIZED)
             .json({ message: statusMessages_1.STATUSMESSAGES.INVALID_CREDENTIALS });
     }
+    //@ts-ignore
+    const isPasswordMatch = bcryptjs_1.default.compare(password, user.password);
+    if (!isPasswordMatch) {
+        return res
+            .status(statusCodes_1.STATUSCODES.UNAUTHORIZED)
+            .json({ message: statusMessages_1.STATUSMESSAGES.INVALID_CREDENTIALS });
+    }
+    const payload = {
+        name: user.name,
+        email: user.email,
+        password: user.password,
+        createdAt: user.createdAt,
+        createdOn: user.createdOn,
+        role: user.role,
+    };
+    //@ts-ignore
+    const accessToken = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: "30d",
+    });
+    return res.status(statusCodes_1.STATUSCODES.OK).json({
+        message: statusMessages_1.STATUSMESSAGES.LOGIN_SUCCESS,
+        userId: user._id,
+        token: accessToken,
+    });
 });
 exports.loginUser = loginUser;

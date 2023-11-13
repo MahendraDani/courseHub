@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import { connectDB } from "./config/database";
 
 import signupUserRoute from "./routes/users/auth/signup.route";
+import loginUserRoute from "./routes/users/auth/login.route";
 import { verifyToken } from "./middlewares/verifyToken";
 
 const app = express();
@@ -30,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // connectDB();
 
 app.use("/users", signupUserRoute);
+app.use("/users", loginUserRoute);
 app.get("/", verifyToken, (req: Request, res: Response) => {
   res.send("Top secret");
 });
